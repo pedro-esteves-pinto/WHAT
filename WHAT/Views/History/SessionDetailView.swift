@@ -21,6 +21,16 @@ struct SessionDetailView: View {
                     )
                 }
             }
+
+            Section("Heart Rate") {
+                HRChartView(
+                    heartRateSamples: session.heartRateSamples,
+                    cycles: session.cycles,
+                    sessionStart: session.date,
+                    totalDuration: session.totalDurationSeconds
+                )
+                .listRowInsets(EdgeInsets(top: 8, leading: 0, bottom: 8, trailing: 0))
+            }
         }
         .navigationTitle(session.date.formatted(date: .abbreviated, time: .omitted))
     }
