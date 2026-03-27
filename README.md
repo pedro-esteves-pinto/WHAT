@@ -27,6 +27,7 @@ graph TD
 
     D --> K[SessionDetailView]
     K --> L[HRChartView]
+    H --> L
 
     subgraph State
         M[SessionStateMachine]
@@ -138,6 +139,15 @@ sequenceDiagram
 - Authorization requested on first session start
 - Samples persisted as `HeartRateSample` linked to the `Session`
 
+## Post-Session Chart
+
+`HRChartView` uses Swift Charts to display a heart rate line chart with colored phase overlay rectangles. The chart appears in both `PostSessionView` (immediately after a session) and `SessionDetailView` (from history).
+
+- **HR line** — red `LineMark` plotting BPM over elapsed seconds
+- **Phase overlays** — colored `RectangleMark` bands computed from `CycleRecord` timestamps (blue = breathing, orange = retention, green = recovery)
+- **No-data fallback** — shows placeholder when no Apple Watch HR data is available
+- Data preparation is extracted into `HRChartData` for testability
+
 ## History & Persistence
 
 Sessions are saved to SwiftData when the user taps "Done" on the post-session screen. The history view groups sessions by date with section headers, showing the time and summary for each session. Swipe-to-delete removes sessions (cascade deletes all child cycle records and heart rate samples).
@@ -206,7 +216,8 @@ WHAT/
 │   │   └── Components/
 │   │       └── HeartRateDisplay.swift
 │   └── Charts/
-│       └── HRChartView.swift      # Swift Charts (Phase 5)
+│       ├── HRChartView.swift      # Swift Charts — HR line + phase overlays
+│       └── HRChartData.swift      # Phase band + data point computation
 ├── WHATTests/                     # Unit + integration tests
 ├── WHATUITests/                   # UI tests
 ├── project.yml                    # XcodeGen project definition
@@ -215,7 +226,7 @@ WHAT/
 
 ## Testing Strategy
 
-- **Unit tests (XCTest)**: State machine transitions, breathing math, config validation, UserDefaults persistence, HealthKitManager (via HeartRateProvider protocol mock)
+- **Unit tests (XCTest)**: State machine transitions, breathing math, config validation, UserDefaults persistence, HealthKitManager (via HeartRateProvider protocol mock), HRChartData computation
 - **Integration tests**: In-memory `ModelContainer` for SwiftData persistence
 - **UI tests (XCUITest)**: Key user flows — configure session, start session, view history
 - **Snapshot tests**: SwiftUI view regression testing via swift-snapshot-testing

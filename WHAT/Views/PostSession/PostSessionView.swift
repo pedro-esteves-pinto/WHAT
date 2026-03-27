@@ -2,42 +2,56 @@ import SwiftUI
 
 struct PostSessionView: View {
     let stateMachine: SessionStateMachine
+    let heartRateSamples: [HeartRateSample]
     let onDismiss: () -> Void
 
     var body: some View {
-        VStack(spacing: 24) {
-            Text("Session Complete")
-                .font(.largeTitle.weight(.bold))
+        ScrollView {
+            VStack(spacing: 24) {
+                Text("Session Complete")
+                    .font(.largeTitle.weight(.bold))
 
-            VStack(spacing: 12) {
-                ForEach(stateMachine.cycleRecords.indices, id: \.self) { index in
-                    let record = stateMachine.cycleRecords[index]
-                    HStack {
-                        Text("Cycle \(index + 1)")
-                            .font(.headline)
-                        Spacer()
-                        Text("Retention: \(formatTime(record.retentionDurationSeconds))")
-                            .monospacedDigit()
+                VStack(spacing: 12) {
+                    ForEach(stateMachine.cycleRecords.indices, id: \.self) { index in
+                        let record = stateMachine.cycleRecords[index]
+                        HStack {
+                            Text("Cycle \(index + 1)")
+                                .font(.headline)
+                            Spacer()
+                            Text("Retention: \(formatTime(record.retentionDurationSeconds))")
+                                .monospacedDigit()
+                        }
                     }
                 }
-            }
-            .padding()
-            .background(RoundedRectangle(cornerRadius: 12).fill(.ultraThinMaterial))
-            .padding(.horizontal)
+                .padding()
+                .background(RoundedRectangle(cornerRadius: 12).fill(.ultraThinMaterial))
+                .padding(.horizontal)
 
-            Text("Total: \(formatTime(stateMachine.totalDuration))")
-                .font(.title3.weight(.semibold))
+                Text("Total: \(formatTime(stateMachine.totalDuration))")
+                    .font(.title3.weight(.semibold))
 
-            Button {
-                onDismiss()
-            } label: {
-                Text("Done")
-                    .font(.title2.weight(.semibold))
-                    .frame(maxWidth: .infinity)
-                    .padding()
+                if let sessionStart = stateMachine.sessionStart {
+                    HRChartView(
+                        heartRateSamples: heartRateSamples,
+                        cycles: stateMachine.cycleRecords,
+                        sessionStart: sessionStart,
+                        totalDuration: stateMachine.totalDuration
+                    )
+                    .padding(.horizontal)
+                }
+
+                Button {
+                    onDismiss()
+                } label: {
+                    Text("Done")
+                        .font(.title2.weight(.semibold))
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                }
+                .buttonStyle(.borderedProminent)
+                .padding(.horizontal)
             }
-            .buttonStyle(.borderedProminent)
-            .padding(.horizontal)
+            .padding(.vertical)
         }
     }
 

@@ -44,7 +44,7 @@ struct SessionContainerView: View {
             case .recovery:
                 RecoveryView(stateMachine: stateMachine)
             case .completed:
-                PostSessionView(stateMachine: stateMachine, onDismiss: {
+                PostSessionView(stateMachine: stateMachine, heartRateSamples: heartRateSamples, onDismiss: {
                     saveSession()
                     isPresented = false
                 })
