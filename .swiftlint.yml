@@ -1,0 +1,34 @@
+included:
+  - WHAT
+  - WHATTests
+  - WHATUITests
+
+excluded:
+  - WHAT.xcodeproj
+
+disabled_rules:
+  - trailing_comma
+
+opt_in_rules:
+  - empty_count
+  - closure_spacing
+  - force_unwrapping
+  - implicit_return
+  - modifier_order
+  - overridden_super_call
+
+line_length:
+  warning: 120
+  error: 150
+
+type_body_length:
+  warning: 300
+  error: 500
+
+file_length:
+  warning: 500
+  error: 1000
+
+function_body_length:
+  warning: 50
+  error: 100

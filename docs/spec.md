@@ -1,4 +1,4 @@
-# Project
+# Spec 
 We want to implement a iOS application that helps with Wim Hoff Method breathing. The application, call it Wim Hoff Auto Tracker, WHAT for short, should allow practioners to start a WHM breathing session. In each session the user can:
 
 - Specify the number of cycles. Offer 1, 3 and 4 as defaults.
@@ -19,6 +19,7 @@ Session data, including number of cycles, number of breaths, cadence, retention 
 ---
 
 # Implementation Plan
+
 
 ## Tech Stack
 - **SwiftUI** for UI
