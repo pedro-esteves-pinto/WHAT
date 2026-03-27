@@ -150,6 +150,73 @@ final class SwiftDataIntegrationTests: XCTestCase {
         XCTAssertEqual(remaining[0].numberOfCycles, 3)
     }
 
+    // MARK: - Session Ordering and Deletion
+
+    @MainActor
+    func testSessionsFetchedInReverseChronologicalOrder() throws {
+        let older = Session(
+            date: Date(timeIntervalSince1970: 1_000_000),
+            numberOfCycles: 1, breathsPerCycle: 25, cadence: 1.0, totalDurationSeconds: 60
+        )
+        let newer = Session(
+            date: Date(timeIntervalSince1970: 2_000_000),
+            numberOfCycles: 3, breathsPerCycle: 35, cadence: 1.0, totalDurationSeconds: 180
+        )
+        context.insert(older)
+        context.insert(newer)
+        try context.save()
+
+        var descriptor = FetchDescriptor<Session>(sortBy: [SortDescriptor(\.date, order: .reverse)])
+        let sessions = try context.fetch(descriptor)
+        XCTAssertEqual(sessions.count, 2)
+        XCTAssertEqual(sessions[0].date, newer.date)
+        XCTAssertEqual(sessions[1].date, older.date)
+    }
+
+    @MainActor
+    func testDeleteSessionRemovesFromStore() throws {
+        let session = Session(numberOfCycles: 1, breathsPerCycle: 25, cadence: 1.0, totalDurationSeconds: 60)
+        let cycle = CycleRecord(cycleIndex: 0, retentionDurationSeconds: 30)
+        cycle.session = session
+        context.insert(session)
+        context.insert(cycle)
+        try context.save()
+
+        context.delete(session)
+        try context.save()
+
+        let sessions = try context.fetch(FetchDescriptor<Session>())
+        let cycles = try context.fetch(FetchDescriptor<CycleRecord>())
+        XCTAssertEqual(sessions.count, 0)
+        XCTAssertEqual(cycles.count, 0)
+    }
+
+    @MainActor
+    func testSessionsGroupByDate() throws {
+        let calendar = Calendar.current
+        let today = calendar.startOfDay(for: Date())
+        let yesterday = calendar.date(byAdding: .day, value: -1, to: today)!
+
+        let s1 = Session(date: today, numberOfCycles: 1, breathsPerCycle: 25, cadence: 1.0, totalDurationSeconds: 60)
+        let s2 = Session(date: today.addingTimeInterval(3600), numberOfCycles: 1, breathsPerCycle: 25, cadence: 1.0, totalDurationSeconds: 90)
+        let s3 = Session(date: yesterday, numberOfCycles: 1, breathsPerCycle: 25, cadence: 1.0, totalDurationSeconds: 45)
+        context.insert(s1)
+        context.insert(s2)
+        context.insert(s3)
+        try context.save()
+
+        let descriptor = FetchDescriptor<Session>(sortBy: [SortDescriptor(\.date, order: .reverse)])
+        let sessions = try context.fetch(descriptor)
+
+        // Group by calendar day
+        let grouped = Dictionary(grouping: sessions) { session in
+            calendar.startOfDay(for: session.date)
+        }
+        XCTAssertEqual(grouped.count, 2)
+        XCTAssertEqual(grouped[today]?.count, 2)
+        XCTAssertEqual(grouped[yesterday]?.count, 1)
+    }
+
     // MARK: - CycleRecord Timestamps
 
     @MainActor

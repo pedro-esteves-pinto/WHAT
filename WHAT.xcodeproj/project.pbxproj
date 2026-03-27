@@ -72,7 +72,7 @@
 		9794801348F4F72422624275 /* SessionStateMachineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionStateMachineTests.swift; sourceTree = "<group>"; };
 		9E0E366C2D2ABD1F0BD2A045 /* HRChartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HRChartView.swift; sourceTree = "<group>"; };
 		A5BB0387D571BFA7714E192C /* SessionDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionDetailView.swift; sourceTree = "<group>"; };
-		B4E9E852EAB797CF0C2DD588 /* WHAT.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = WHAT.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		B4E9E852EAB797CF0C2DD588 /* WHAT.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = WHAT.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B510F51CF317E261562CCABF /* RecoveryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecoveryView.swift; sourceTree = "<group>"; };
 		BDFFE61C8C8615D04262EB82 /* SessionContainerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionContainerView.swift; sourceTree = "<group>"; };
 		CE4FD634E6607E6005CE7F6D /* Session.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Session.swift; sourceTree = "<group>"; };
@@ -302,9 +302,6 @@
 				BuildIndependentTargetsInParallel = YES;
 				LastUpgradeCheck = 1500;
 				TargetAttributes = {
-					2126CFE956018BACF39ADDE4 = {
-						DevelopmentTeam = "";
-					};
 					B6CAF968189606E9BB7D366E = {
 						DevelopmentTeam = "";
 					};
@@ -407,6 +404,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = WHAT/WHAT.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
+				DEVELOPMENT_TEAM = N3ADG2D5QF;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "WHAT uses your heart rate data to track your breathing session.";
 				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "WHAT records workout sessions during breathing exercises.";
@@ -505,6 +503,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = WHAT/WHAT.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
+				DEVELOPMENT_TEAM = N3ADG2D5QF;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "WHAT uses your heart rate data to track your breathing session.";
 				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "WHAT records workout sessions during breathing exercises.";

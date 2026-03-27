@@ -21,4 +21,13 @@ final class WHATUITests: XCTestCase {
         XCTAssertTrue(app.staticTexts["Breaths per Cycle"].exists)
         XCTAssertTrue(app.staticTexts["Cadence (breaths/sec)"].exists)
     }
+
+    func testNavigateToHistoryShowsEmptyState() {
+        let historyLink = app.links["History"].exists ? app.links["History"] : app.buttons["History"]
+        XCTAssertTrue(historyLink.exists)
+        historyLink.tap()
+
+        XCTAssertTrue(app.navigationBars["History"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.staticTexts["No Sessions Yet"].exists)
+    }
 }

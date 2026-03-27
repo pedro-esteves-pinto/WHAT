@@ -9,3 +9,4 @@
 - **Integration tests**: Use in-memory `ModelContainer` to test SwiftData persistence in isolation.
 - **Snapshot tests**: Use **swift-snapshot-testing** for SwiftUI view regression testing.
 - Before concluding any change make sure to update the documentation and run all the tests. Only in the case of success should the change be considered done.
+- **Branch + PR workflow**: All changes must be done on a feature branch and merged via pull request. Never commit directly to `master`.

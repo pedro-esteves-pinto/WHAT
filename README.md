@@ -15,7 +15,7 @@ The app follows a simple **Model–View–State** architecture:
 graph TD
     A[HomeView] -->|configure| B[ConfigView]
     A -->|start session| C[SessionContainerView]
-    A -->|view history| D[HistoryListView]
+    A -->|view history| D[HistoryListView - date grouped]
 
     C --> E[PowerBreathingView]
     C --> F[RetentionView]
@@ -110,6 +110,19 @@ erDiagram
 Relationships use `@Relationship(deleteRule: .cascade)` — deleting a `Session` removes all child records.
 
 `SessionConfig` is a separate `Codable` struct stored in `UserDefaults` (not SwiftData) to remember the user's last choices.
+
+## History & Persistence
+
+Sessions are saved to SwiftData when the user taps "Done" on the post-session screen. The history view groups sessions by date with section headers, showing the time and summary for each session. Swipe-to-delete removes sessions (cascade deletes all child cycle records and heart rate samples).
+
+```mermaid
+flowchart LR
+    A[Session Completes] --> B[Save Session + CycleRecords to SwiftData]
+    B --> C[HistoryListView]
+    C -->|grouped by date| D[Section per day]
+    D -->|tap| E[SessionDetailView]
+    D -->|swipe| F[Delete Session cascade]
+```
 
 ## Session Flow
 
