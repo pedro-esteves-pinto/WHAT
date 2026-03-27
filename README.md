@@ -45,6 +45,7 @@ graph TD
     end
 
     C ---|drives| M
+    C ---|HR streaming| P
     A ---|persists config| O
     C ---|saves session| Q
     Q --- R
@@ -111,6 +112,32 @@ Relationships use `@Relationship(deleteRule: .cascade)` — deleting a `Session`
 
 `SessionConfig` is a separate `Codable` struct stored in `UserDefaults` (not SwiftData) to remember the user's last choices.
 
+## HealthKit Heart Rate Integration
+
+Heart rate monitoring uses `HKAnchoredObjectQuery` to stream live HR samples from a paired Apple Watch during sessions. The `HeartRateProvider` protocol abstracts HealthKit for testability.
+
+```mermaid
+sequenceDiagram
+    participant SC as SessionContainerView
+    participant HK as HealthKitManager
+    participant HS as HKHealthStore
+
+    SC->>HK: startMonitoring()
+    HK->>HS: execute(HKAnchoredObjectQuery)
+    loop HR samples arrive
+        HS-->>HK: updateHandler(samples)
+        HK-->>SC: onHeartRateUpdate(bpm)
+        SC->>SC: Update HeartRateDisplay
+    end
+    SC->>HK: stopMonitoring()
+    HK-->>SC: [HeartRateSample]
+    SC->>SC: Persist samples with Session
+```
+
+- Gracefully degrades when no Apple Watch is paired (shows "No HR data")
+- Authorization requested on first session start
+- Samples persisted as `HeartRateSample` linked to the `Session`
+
 ## History & Persistence
 
 Sessions are saved to SwiftData when the user taps "Done" on the post-session screen. The history view groups sessions by date with section headers, showing the time and summary for each session. Swipe-to-delete removes sessions (cascade deletes all child cycle records and heart rate samples).
@@ -142,7 +169,7 @@ sequenceDiagram
         SM->>SM: recovery (15s countdown)
     end
     SM->>SM: completed
-    SM->>DB: Save Session + CycleRecords
+    SM->>DB: Save Session + CycleRecords + HeartRateSamples
     U->>H: Dismiss
 ```
 
@@ -160,7 +187,7 @@ WHAT/
 │   │   ├── SessionConfig.swift    # Codable value type for config
 │   │   └── SessionStateMachine.swift  # @Observable — drives all phases + timers
 │   ├── Services/
-│   │   ├── HealthKitManager.swift # HealthKit auth + HR streaming (Phase 4)
+│   │   ├── HealthKitManager.swift # HealthKit auth + HR streaming via HKAnchoredObjectQuery
 │   │   └── UserDefaultsStore.swift
 │   ├── Views/
 │   │   ├── HomeView.swift
@@ -188,7 +215,7 @@ WHAT/
 
 ## Testing Strategy
 
-- **Unit tests (XCTest)**: State machine transitions, breathing math, config validation, UserDefaults persistence
+- **Unit tests (XCTest)**: State machine transitions, breathing math, config validation, UserDefaults persistence, HealthKitManager (via HeartRateProvider protocol mock)
 - **Integration tests**: In-memory `ModelContainer` for SwiftData persistence
 - **UI tests (XCUITest)**: Key user flows — configure session, start session, view history
 - **Snapshot tests**: SwiftUI view regression testing via swift-snapshot-testing
